@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="grid">
+        <div id="ball"></div>
+    </div>
+
+    <script>
+        const ball = document.querySelector('#ball')
+        const grid = document.querySelector('#grid')
+        const gridDimentions = [800, 500]
+        const ballDimentions = [15, 15]
+        const initialBallPosition = [(gridDimentions[0] - ballDimentions[0]) / 2, gridDimentions[1] - ballDimentions[0]];
+        const currentBallPosition = [initialBallPosition[0], initialBallPosition[1]]
+        let xDirection = 2, yDirection = -2
+
+
+        grid.style.width = gridDimentions[0] + 'px'
+        grid.style.height = gridDimentions[1] + 'px'
+
+        class Block {
+            constructor(positionX, positionY) {
+                this.topLeft = [positionX, positionY]
+                this.topRight = [positionX + 100, positionY]
+                this.bottomLeft = [positionX, positionY + 20]
+                this.bottomRight = [positionX + 100, positionY + 20]
+            }
+        }
+        const blocks = [
+            new Block(20, 40),
+            new Block(130, 40),
+            new Block(240, 40),
+            new Block(350, 40),
+            new Block(460, 40),
+            new Block(570, 40),
+            new Block(680, 40),
+
+            new Block(20, 80),
+            new Block(130, 80),
+            new Block(240, 80),
+            new Block(350, 80),
+            new Block(460, 80),
+            new Block(570, 80),
+            new Block(680, 80),
+
+            new Block(20, 120),
+            new Block(130, 120),
+            new Block(240, 120),
+            new Block(350, 120),
+            new Block(460, 120),
+            new Block(570, 120),
+            new Block(680, 120),
+        ]
+
+        createBlocks()
+        function createBlocks() {
+            let i;
+            for (i = 0; i < blocks.length; i++) {
+                const block = document.createElement('div')
+                block.classList.add('block')
+                block.style.left = blocks[i].topLeft[0] + 'px'
+                block.style.top = blocks[i].topLeft[1] + 'px'
+                grid.appendChild(block)
+            }
+        }
+
+        function createUser() {
+            
+        }
+
+        function changeDirection() {
+            if (currentBallPosition[0] > gridDimentions[0] - ballDimentions[0]) {
+                xDirection = -1 * xDirection
+            }
+            if (currentBallPosition[1] < 0) {
+                yDirection = -1 * yDirection
+            }
+            if (currentBallPosition[0] < 0) {
+                xDirection = -1 * xDirection
+            }
+            if (currentBallPosition[1] > gridDimentions[1] - ballDimentions[0]) {
+                yDirection = -1 * yDirection
+            }
+        }
+
+        function moveBall() {
+            currentBallPosition[0] += xDirection
+            currentBallPosition[1] += yDirection
+            ball.style.left = currentBallPosition[0] + 'px'
+            ball.style.top = currentBallPosition[1] + 'px'
+            //change direction due to walls
+            changeDirection();
+            //change direction due to hitted blocks
+            let i;
+
+            for (i = 0; i < blocks.length; i++) {
+
+
+                if (
+                    currentBallPosition[0] > blocks[i].bottomLeft[0] &&
+                    currentBallPosition[0] < blocks[i].bottomRight[0] &&
+                    currentBallPosition[1] > blocks[i].topLeft[1] &&
+                    currentBallPosition[1] < blocks[i].bottomLeft[1]
+
+                ) {
+                    blocks.splice(i,1)
+                    const allBlocks = Array.from(document.querySelectorAll('.block'))
+                     allBlocks[i].classList.remove('block')
+
+                     //must be improved, not a sense of hitting direction now
+                    if (xDirection === 2 && yDirection === 2) {
+                        yDirection = -2
+                        return
+                    }
+                    if (xDirection === 2 && yDirection === -2) {
+                        xDirection = -2
+                        return
+                    }
+                    if (xDirection === -2 && yDirection === -2) {
+                        yDirection = 2
+                        return
+                    }
+                    if (xDirection === -2 && yDirection === 2) {
+                        xDirection = 2
+                        return
+                    }
+                }
+            }
+        }
+        const time = setInterval(moveBall, 20);
+
+    </script>
+
+
+    <style>
+        #grid {
+            border: 1px solid black;
+        }
+
+        #ball {
+            position: relative;
+            width: 15px;
+            height: 15px;
+            border-radius: 15px;
+            border: 1px solid black;
+            background-color: aqua;
+            left: 390px;
+            top: 400px;
+        }
+
+        .block {
+            position: absolute;
+            width: 100px;
+            height: 20px;
+            background-color: pink;
+        }
+    </style>
+</body>
+
+</html>
